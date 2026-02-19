@@ -48,34 +48,52 @@ const CanvasPreview = ({ settings }) => {
                 }
             }
         } else if (pattern === 'geometric') {
-            for (let x = 0; x < width; x += gridSize) {
-                for (let y = 0; y < height; y += gridSize) {
+            let rowCount = 0
+            for (let y = 0; y < height + gridSize; y += gridSize) {
+                const isEvenRow = rowCount % 2 === 0
+                const currentOffset = (settings.useOffset && !isEvenRow) ? settings.offsetAmount : 0
+
+                for (let x = -gridSize; x < width + gridSize; x += gridSize) {
+                    const drawX = x + currentOffset
+                    const drawY = y
+                    const centerX = drawX + gridSize / 2
+                    const centerY = drawY + gridSize / 2
+
+                    ctx.save()
+                    ctx.translate(centerX, centerY)
+                    if (settings.shapeRotation !== 0) {
+                        ctx.rotate((settings.shapeRotation * Math.PI) / 180)
+                    }
+
                     if (shapeType === 'triangle') {
                         ctx.beginPath()
-                        ctx.moveTo(x + gridSize / 2, y)
-                        ctx.lineTo(x + gridSize, y + gridSize)
-                        ctx.lineTo(x, y + gridSize)
+                        ctx.moveTo(0, -gridSize / 3)
+                        ctx.lineTo(gridSize / 3, gridSize / 3)
+                        ctx.lineTo(-gridSize / 3, gridSize / 3)
                         ctx.closePath()
                         ctx.fill()
                     } else if (shapeType === 'circle') {
                         ctx.beginPath()
-                        ctx.arc(x + gridSize / 2, y + gridSize / 2, gridSize / 3, 0, Math.PI * 2)
+                        ctx.arc(0, 0, gridSize / 3, 0, Math.PI * 2)
                         ctx.fill()
                     } else if (shapeType === 'octagon') {
-                        const side = gridSize / 3
+                        const side = gridSize / 4
+                        const half = gridSize / 3
                         ctx.beginPath()
-                        ctx.moveTo(x + side, y)
-                        ctx.lineTo(x + gridSize - side, y)
-                        ctx.lineTo(x + gridSize, y + side)
-                        ctx.lineTo(x + gridSize, y + gridSize - side)
-                        ctx.lineTo(x + gridSize - side, y + gridSize)
-                        ctx.lineTo(x + side, y + gridSize)
-                        ctx.lineTo(x, y + gridSize - side)
-                        ctx.lineTo(x, y + side)
+                        ctx.moveTo(-side, -half)
+                        ctx.lineTo(side, -half)
+                        ctx.lineTo(half, -side)
+                        ctx.lineTo(half, side)
+                        ctx.lineTo(side, half)
+                        ctx.lineTo(-side, half)
+                        ctx.lineTo(-half, side)
+                        ctx.lineTo(-half, -side)
                         ctx.closePath()
                         ctx.fill()
                     }
+                    ctx.restore()
                 }
+                rowCount++
             }
         } else if (pattern === 'lines') {
             const step = gridSize || 50

@@ -9,13 +9,13 @@ const Sidebar = ({ settings, setSettings }) => {
                 ...prev,
                 [parent]: {
                     ...prev[parent],
-                    [child]: type === 'checkbox' ? checked : (type === 'number' ? Number(value) : value)
+                    [child]: type === 'checkbox' ? checked : (type === 'number' || type === 'range' ? Number(value) : value)
                 }
             }))
         } else {
             setSettings(prev => ({
                 ...prev,
-                [name]: type === 'checkbox' ? checked : (type === 'number' ? Number(value) : value)
+                [name]: type === 'checkbox' ? checked : (type === 'number' || type === 'range' ? Number(value) : value)
             }))
         }
     }
@@ -132,7 +132,7 @@ const Sidebar = ({ settings, setSettings }) => {
                     )}
 
                     {settings.pattern === 'geometric' && (
-                        <div className="space-y-3">
+                        <div className="space-y-4">
                             <select name="shapeType" value={settings.shapeType} onChange={handleChange} className={selectClasses}>
                                 <option value="triangle">Triangles</option>
                                 <option value="circle">Circles</option>
@@ -143,7 +143,31 @@ const Sidebar = ({ settings, setSettings }) => {
                                     <span className="text-[10px] text-slate-500">Shape Size</span>
                                     <span className="text-[10px] text-slate-400">{settings.gridSize}px</span>
                                 </div>
-                                <input type="range" name="gridSize" min="10" max="200" value={settings.gridSize} onChange={handleChange} className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-primary-500" />
+                                <input type="range" name="gridSize" min="10" max="250" value={settings.gridSize} onChange={handleChange} className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-primary-500" />
+                            </div>
+
+                            <div>
+                                <div className="flex justify-between mb-1.5">
+                                    <span className="text-[10px] text-slate-500">Rotation</span>
+                                    <span className="text-[10px] text-slate-400">{settings.shapeRotation}°</span>
+                                </div>
+                                <input type="range" name="shapeRotation" min="0" max="360" value={settings.shapeRotation} onChange={handleChange} className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-primary-500" />
+                            </div>
+
+                            <div className="space-y-3 pt-2 border-t border-slate-800/50">
+                                <label className="flex items-center gap-2 cursor-pointer group">
+                                    <input type="checkbox" name="useOffset" checked={settings.useOffset} onChange={handleChange} className="w-4 h-4 rounded border-slate-700 bg-slate-800 text-primary-500 focus:ring-0" />
+                                    <span className="text-xs text-slate-400 group-hover:text-slate-200 transition-colors">Row Offset</span>
+                                </label>
+                                {settings.useOffset && (
+                                    <div>
+                                        <div className="flex justify-between mb-1.5">
+                                            <span className="text-[10px] text-slate-500">Offset Pixels</span>
+                                            <span className="text-[10px] text-slate-400">{settings.offsetAmount}px</span>
+                                        </div>
+                                        <input type="range" name="offsetAmount" min="0" max={settings.gridSize} value={settings.offsetAmount} onChange={handleChange} className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-primary-500" />
+                                    </div>
+                                )}
                             </div>
                         </div>
                     )}
