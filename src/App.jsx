@@ -21,6 +21,8 @@ function App() {
     lineAmplitude: 20,
     noiseScale: 50,
     textureDensity: 0.5,
+    meshDensity: 40,
+    meshVariance: 25,
     shapeRotation: 0,
     useOffset: false,
     offsetAmount: 0,

@@ -120,7 +120,27 @@ const Sidebar = ({ settings, setSettings }) => {
                         <option value="lines">Lines</option>
                         <option value="noise_grain">Noise / Sand</option>
                         <option value="perlin_noise">Perlin Noise</option>
+                        <option value="low_poly">Low-Poly Mesh</option>
                     </select>
+
+                    {settings.pattern === 'low_poly' && (
+                        <div className="space-y-4">
+                            <div>
+                                <div className="flex justify-between mb-1.5">
+                                    <span className="text-[10px] text-slate-500">Mesh Density</span>
+                                    <span className="text-[10px] text-slate-400">{settings.meshDensity}</span>
+                                </div>
+                                <input type="range" name="meshDensity" min="10" max="100" value={settings.meshDensity} onChange={handleChange} className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-primary-500" />
+                            </div>
+                            <div>
+                                <div className="flex justify-between mb-1.5">
+                                    <span className="text-[10px] text-slate-500">Variance / Jitter</span>
+                                    <span className="text-[10px] text-slate-400">{settings.meshVariance}</span>
+                                </div>
+                                <input type="range" name="meshVariance" min="0" max="50" value={settings.meshVariance} onChange={handleChange} className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-primary-500" />
+                            </div>
+                        </div>
+                    )}
 
                     {settings.pattern === 'perlin_noise' && (
                         <div className="space-y-4">
