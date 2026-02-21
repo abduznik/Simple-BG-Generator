@@ -274,6 +274,33 @@ const CanvasPreview = ({ settings }) => {
             ctx.putImageData(imageData, 0, 0)
         }
 
+        // Chromatic Aberration
+        if (postProcessing.chromaticAberration) {
+            const offset = postProcessing.aberrationOffset
+            const imageData = ctx.getImageData(0, 0, width, height)
+            const originalData = new Uint8ClampedArray(imageData.data)
+            const data = imageData.data
+
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    const idx = (y * width + x) * 4
+                    
+                    // Sample Red from x + offset
+                    const redX = Math.max(0, Math.min(width - 1, x + offset))
+                    const redIdx = (y * width + redX) * 4
+                    data[idx] = originalData[redIdx]
+
+                    // Green remains original (idx)
+                    
+                    // Sample Blue from x - offset
+                    const blueX = Math.max(0, Math.min(width - 1, x - offset))
+                    const blueIdx = (y * width + blueX) * 4
+                    data[idx + 2] = originalData[blueIdx]
+                }
+            }
+            ctx.putImageData(imageData, 0, 0)
+        }
+
     }, [settings])
 
     return (
