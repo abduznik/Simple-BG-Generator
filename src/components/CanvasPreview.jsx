@@ -1,4 +1,5 @@
 import React, { useRef, useEffect } from 'react'
+import { createNoise2D } from 'simplex-noise'
 
 const CanvasPreview = ({ settings }) => {
     const canvasRef = useRef(null)
@@ -126,6 +127,48 @@ const CanvasPreview = ({ settings }) => {
                         ctx.fillRect(x, y, 1, 1)
                     }
                 }
+            }
+        } else if (pattern === 'perlin_noise') {
+            const noise2D = createNoise2D()
+            const imageData = ctx.getImageData(0, 0, width, height)
+            const data = imageData.data
+
+            // Helper to parse hex colors
+            const hexToRgb = (hex) => {
+                const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+                return result ? {
+                    r: parseInt(result[1], 16),
+                    g: parseInt(result[2], 16),
+                    b: parseInt(result[3], 16)
+                } : null
+            }
+
+            const rgb1 = hexToRgb(c1)
+            const rgb2 = hexToRgb(c2)
+
+            if (rgb1 && rgb2) {
+                const scale = settings.noiseScale || 50
+                const density = settings.textureDensity ?? 0.5
+
+                for (let y = 0; y < height; y++) {
+                    for (let x = 0; x < width; x++) {
+                        // Generate noise value [-1, 1]
+                        const noise = noise2D(x / (scale * 2), y / (scale * 2))
+                        
+                        // Map noise to [0, 1] and apply density as a threshold or weight
+                        let factor = (noise + 1) / 2
+                        
+                        // Apply texture density as a contrast/threshold modifier
+                        factor = Math.max(0, Math.min(1, (factor - (1 - density)) / (density || 0.001)))
+
+                        const idx = (y * width + x) * 4
+                        data[idx] = rgb1.r + (rgb2.r - rgb1.r) * factor
+                        data[idx + 1] = rgb1.g + (rgb2.g - rgb1.g) * factor
+                        data[idx + 2] = rgb1.b + (rgb2.b - rgb1.b) * factor
+                        data[idx + 3] = 255
+                    }
+                }
+                ctx.putImageData(imageData, 0, 0)
             }
         }
 
