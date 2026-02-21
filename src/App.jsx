@@ -19,6 +19,8 @@ function App() {
     lineWidth: 2,
     lineFrequency: 0.05,
     lineAmplitude: 20,
+    noiseScale: 50,
+    textureDensity: 0.5,
     shapeRotation: 0,
     useOffset: false,
     offsetAmount: 0,

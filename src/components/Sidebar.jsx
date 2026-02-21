@@ -119,7 +119,27 @@ const Sidebar = ({ settings, setSettings }) => {
                         <option value="geometric">Geometric Shapes</option>
                         <option value="lines">Lines</option>
                         <option value="noise_grain">Noise / Sand</option>
+                        <option value="perlin_noise">Perlin Noise</option>
                     </select>
+
+                    {settings.pattern === 'perlin_noise' && (
+                        <div className="space-y-4">
+                            <div>
+                                <div className="flex justify-between mb-1.5">
+                                    <span className="text-[10px] text-slate-500">Noise Scale</span>
+                                    <span className="text-[10px] text-slate-400">{settings.noiseScale}</span>
+                                </div>
+                                <input type="range" name="noiseScale" min="1" max="100" value={settings.noiseScale} onChange={handleChange} className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-primary-500" />
+                            </div>
+                            <div>
+                                <div className="flex justify-between mb-1.5">
+                                    <span className="text-[10px] text-slate-500">Texture Density</span>
+                                    <span className="text-[10px] text-slate-400">{settings.textureDensity}</span>
+                                </div>
+                                <input type="range" name="textureDensity" min="0" max="1" step="0.01" value={settings.textureDensity} onChange={handleChange} className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-primary-500" />
+                            </div>
+                        </div>
+                    )}
 
                     {settings.pattern === 'checkerboard' && (
                         <div>
