@@ -23,6 +23,16 @@ const CanvasPreview = ({ settings }) => {
         const c1 = inverted ? color2 : color1
         const c2 = inverted ? color1 : color2
 
+        // Helper to parse hex colors
+        const hexToRgb = (hex) => {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : null
+        }
+
         // Clear background
         ctx.fillStyle = c1
         ctx.fillRect(0, 0, width, height)
@@ -133,16 +143,6 @@ const CanvasPreview = ({ settings }) => {
             const imageData = ctx.getImageData(0, 0, width, height)
             const data = imageData.data
 
-            // Helper to parse hex colors
-            const hexToRgb = (hex) => {
-                const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
-                return result ? {
-                    r: parseInt(result[1], 16),
-                    g: parseInt(result[2], 16),
-                    b: parseInt(result[3], 16)
-                } : null
-            }
-
             const rgb1 = hexToRgb(c1)
             const rgb2 = hexToRgb(c2)
 
@@ -169,6 +169,66 @@ const CanvasPreview = ({ settings }) => {
                     }
                 }
                 ctx.putImageData(imageData, 0, 0)
+            }
+        } else if (pattern === 'low_poly') {
+            const density = settings.meshDensity || 40
+            const variance = settings.meshVariance || 25
+            const rgb1 = hexToRgb(c1)
+            const rgb2 = hexToRgb(c2)
+
+            if (rgb1 && rgb2) {
+                const points = []
+                const rows = Math.ceil(height / density) + 1
+                const cols = Math.ceil(width / density) + 1
+
+                // Generate jittered grid points
+                for (let r = 0; r <= rows; r++) {
+                    points[r] = []
+                    for (let c = 0; c <= cols; c++) {
+                        const px = c * density + (Math.random() - 0.5) * variance
+                        const py = r * density + (Math.random() - 0.5) * variance
+                        points[r][c] = { x: px, y: py }
+                    }
+                }
+
+                // Draw triangles
+                for (let r = 0; r < rows; r++) {
+                    for (let c = 0; c < cols; c++) {
+                        const p1 = points[r][c]
+                        const p2 = points[r + 1][c]
+                        const p3 = points[r][c + 1]
+                        const p4 = points[r + 1][c + 1]
+
+                        const drawTriangle = (a, b, d) => {
+                            const centerX = (a.x + b.x + d.x) / 3
+                            const centerY = (a.y + b.y + d.y) / 3
+                            
+                            // Color interpolation based on position
+                            const factorX = Math.max(0, Math.min(1, centerX / width))
+                            const factorY = Math.max(0, Math.min(1, centerY / height))
+                            const factor = (factorX + factorY) / 2
+                            
+                            const r_val = Math.round(rgb1.r + (rgb2.r - rgb1.r) * factor)
+                            const g_val = Math.round(rgb1.g + (rgb2.g - rgb1.g) * factor)
+                            const b_val = Math.round(rgb1.b + (rgb2.b - rgb1.b) * factor)
+
+                            ctx.fillStyle = `rgb(${r_val}, ${g_val}, ${b_val})`
+                            ctx.strokeStyle = `rgb(${r_val}, ${g_val}, ${b_val})`
+                            ctx.lineWidth = 1
+                            
+                            ctx.beginPath()
+                            ctx.moveTo(a.x, a.y)
+                            ctx.lineTo(b.x, b.y)
+                            ctx.lineTo(d.x, d.y)
+                            ctx.closePath()
+                            ctx.fill()
+                            ctx.stroke()
+                        }
+
+                        drawTriangle(p1, p2, p3)
+                        drawTriangle(p2, p3, p4)
+                    }
+                }
             }
         }
 
