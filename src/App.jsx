@@ -33,6 +33,8 @@ function App() {
       scanlineIntensity: 0.3,
       noise: false,
       noiseIntensity: 0.1,
+      chromaticAberration: false,
+      aberrationOffset: 2,
     }
   })
 

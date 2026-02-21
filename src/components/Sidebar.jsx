@@ -264,6 +264,22 @@ const Sidebar = ({ settings, setSettings }) => {
                             <input type="range" name="postProcessing.noiseIntensity" min="0" max="0.5" step="0.05" value={settings.postProcessing.noiseIntensity} onChange={handleChange} className="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-primary-500" />
                         )}
                     </div>
+
+                    <div className="space-y-2">
+                        <label className="flex items-center gap-2 cursor-pointer group">
+                            <input type="checkbox" name="postProcessing.chromaticAberration" checked={settings.postProcessing.chromaticAberration} onChange={handleChange} className="w-4 h-4 rounded border-slate-700 bg-slate-800 text-primary-500 focus:ring-0" />
+                            <span className="text-xs text-slate-400 group-hover:text-slate-200 transition-colors">Chromatic Aberration</span>
+                        </label>
+                        {settings.postProcessing.chromaticAberration && (
+                            <div className="space-y-1">
+                                <div className="flex justify-between">
+                                    <span className="text-[9px] text-slate-500 uppercase">Offset</span>
+                                    <span className="text-[9px] text-slate-400">{settings.postProcessing.aberrationOffset}px</span>
+                                </div>
+                                <input type="range" name="postProcessing.aberrationOffset" min="-10" max="10" step="1" value={settings.postProcessing.aberrationOffset} onChange={handleChange} className="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-primary-500" />
+                            </div>
+                        )}
+                    </div>
                 </div>
             </section>
 
